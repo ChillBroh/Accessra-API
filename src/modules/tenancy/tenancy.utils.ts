@@ -1,25 +1,29 @@
-import { DataSource, DataSourceOptions } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { tenantOrmConfig } from '../../config/tenant-orm.config';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { Tenant } from '../public/entities/tenant.entity';
 
 const tenantConnections: Map<string, DataSource> = new Map();
 
-export async function getTenantConnection(tenantId: string): Promise<DataSource> {
+export async function getTenantConnection(
+  tenantId: string,
+): Promise<DataSource> {
   // First, get the public connection to fetch the tenant
   const publicConnection = new DataSource({
     ...(tenantOrmConfig as PostgresConnectionOptions),
     name: 'public_temp',
     schema: 'public',
-    entities: [Tenant]
+    entities: [Tenant],
   });
 
   await publicConnection.initialize();
 
   try {
     // Get the tenant to find its schema name
-    const tenant = await publicConnection.getRepository(Tenant).findOne({ where: { id: tenantId } });
-    
+    const tenant = await publicConnection
+      .getRepository(Tenant)
+      .findOne({ where: { id: tenantId } });
+
     if (!tenant) {
       throw new Error(`Tenant with id ${tenantId} not found`);
     }

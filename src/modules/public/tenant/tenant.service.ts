@@ -17,25 +17,28 @@ export class TenantService {
   async create(createTenantDto: CreateTenantDto): Promise<Tenant> {
     let tenant = new Tenant();
     tenant.name = createTenantDto.name;
-    
+
+    // Set a temporary schema name before saving
+    tenant.schemaName = `temp_${Date.now()}`;
+
     // Save the tenant first to get the ID
     tenant = await this.tenantRepository.save(tenant);
-    
-    // Now set the schema name using the tenant ID
-    tenant.schemaName = `tenant_${tenant.id}`;
-    console.log(tenant.schemaName)
+
+    // Now set the actual schema name using the tenant ID
+    tenant.schemaName = `tenant_${tenant.name}_${tenant.id}`;
     tenant = await this.tenantRepository.save(tenant);
-    console.log(tenant)
 
     try {
       // Create the schema
-      await this.dataSource.query(`CREATE SCHEMA IF NOT EXISTS "${tenant.schemaName}"`);
-      
+      await this.dataSource.query(
+        `CREATE SCHEMA IF NOT EXISTS "${tenant.schemaName}"`,
+      );
+
       // Get tenant connection and run migrations
       const connection = await getTenantConnection(tenant.id);
       await connection.runMigrations();
       await connection.destroy();
-      
+
       return tenant;
     } catch (error) {
       // If something goes wrong, delete the tenant and throw the error
