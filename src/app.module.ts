@@ -8,15 +8,6 @@ import { UserPrivilegeMatrixModule } from './modules/tenanted/user-privilege-mat
 
 @Module({
   imports: [
-    // TypeOrmModule.forRoot({
-    //   type: 'postgres',
-    //   host: 'localhost',
-    //   port: 5432,
-    //   username: 'thomasvanderstraeten',
-    //   password: 'root',
-    //   database: 'nestjs-multi-tenant',
-    //   autoLoadEntities: true,
-    // }),
     TypeOrmModule.forRoot(publicOrmConfig),
     TenantModule,
     UserModule,
