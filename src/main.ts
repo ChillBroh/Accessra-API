@@ -23,13 +23,18 @@ async function bootstrap() {
   // ✅ Run tenant migrations for each tenant
   for (const tenant of tenants) {
     try {
-      Logger.log(`Running migrations for tenant: ${tenant.name} (${tenant.id})`);
+      Logger.log(
+        `Running migrations for tenant: ${tenant.name} (${tenant.id})`,
+      );
       const tenantConnection = await getTenantConnection(tenant.id);
       await tenantConnection.runMigrations();
       await tenantConnection.destroy();
       Logger.log(`Migrations completed for tenant: ${tenant.name}`);
     } catch (error) {
-      Logger.error(`Failed to run migrations for tenant: ${tenant.name}`, error);
+      Logger.error(
+        `Failed to run migrations for tenant: ${tenant.name}`,
+        error,
+      );
     }
   }
 

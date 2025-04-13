@@ -7,8 +7,12 @@ const type = args[0]; // 'public' or 'tenant'
 const name = args[1]; // Migration name
 
 if (!type || !name) {
-  console.error('❌ Please provide both <type> (public|tenant) and <name> args');
-  console.error('Usage: npm run db:migration:generate -- <type> <MigrationName>');
+  console.error(
+    '❌ Please provide both <type> (public|tenant) and <name> args',
+  );
+  console.error(
+    'Usage: npm run db:migration:generate -- <type> <MigrationName>',
+  );
   process.exit(1);
 }
 

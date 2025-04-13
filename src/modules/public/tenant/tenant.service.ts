@@ -25,7 +25,7 @@ export class TenantService {
     tenant = await this.tenantRepository.save(tenant);
 
     // Now set the actual schema name using the tenant ID
-    tenant.schemaName = `tenant_${tenant.name}_${tenant.id}`;
+    tenant.schemaName = `tenant_${tenant.name.replace(/\s+/g, '_')}_${tenant.id}`;
     tenant = await this.tenantRepository.save(tenant);
 
     try {

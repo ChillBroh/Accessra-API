@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class CreateTenantTables1744545894746 implements MigrationInterface {
   name = 'CreateTenantTables1744545894746';
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const schema = queryRunner.connection.driver.schema
+    const schema = queryRunner.connection.driver.schema;
     // Create role table
     await queryRunner.query(
       `CREATE TABLE "${schema}"."role" (
