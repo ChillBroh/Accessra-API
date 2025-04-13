@@ -1,26 +1,50 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTenantDto } from './dto/create-tenant.dto';
-import { UpdateTenantDto } from './dto/update-tenant.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Tenant } from '../entities/tenant.entity';
+import { Repository, DataSource } from 'typeorm';
+import { getTenantConnection } from '../../tenancy/tenancy.utils';
 
 @Injectable()
 export class TenantService {
-  create(createTenantDto: CreateTenantDto) {
-    return 'This action adds a new tenant';
+  constructor(
+    @InjectRepository(Tenant)
+    private readonly tenantRepository: Repository<Tenant>,
+    private readonly dataSource: DataSource,
+  ) {}
+
+  // async convertToDataSourceOptions()
+  async create(createTenantDto: CreateTenantDto): Promise<Tenant> {
+    let tenant = new Tenant();
+    tenant.name = createTenantDto.name;
+    
+    // Save the tenant first to get the ID
+    tenant = await this.tenantRepository.save(tenant);
+    
+    // Now set the schema name using the tenant ID
+    tenant.schemaName = `tenant_${tenant.id}`;
+    console.log(tenant.schemaName)
+    tenant = await this.tenantRepository.save(tenant);
+    console.log(tenant)
+
+    try {
+      // Create the schema
+      await this.dataSource.query(`CREATE SCHEMA IF NOT EXISTS "${tenant.schemaName}"`);
+      
+      // Get tenant connection and run migrations
+      const connection = await getTenantConnection(tenant.id);
+      await connection.runMigrations();
+      await connection.destroy();
+      
+      return tenant;
+    } catch (error) {
+      // If something goes wrong, delete the tenant and throw the error
+      await this.tenantRepository.delete(tenant.id);
+      throw error;
+    }
   }
 
-  findAll() {
-    return `This action returns all tenant`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} tenant`;
-  }
-
-  update(id: number, updateTenantDto: UpdateTenantDto) {
-    return `This action updates a #${id} tenant`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} tenant`;
+  findAll(): Promise<Tenant[]> {
+    return this.tenantRepository.find();
   }
 }
