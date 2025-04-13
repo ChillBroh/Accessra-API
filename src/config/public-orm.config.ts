@@ -2,6 +2,7 @@ import { SnakeNamingStrategy } from '../SnakeNamingStrategy';
 import { Tenant } from '../modules/public/entities/tenant.entity';
 import { User } from '../modules/public/entities/user.entity';
 import { DataSourceOptions } from 'typeorm';
+import { join } from 'path';
 
 export const publicOrmConfig: DataSourceOptions = {
   type: 'postgres',
@@ -9,9 +10,9 @@ export const publicOrmConfig: DataSourceOptions = {
   port: 5432,
   username: 'postgres',
   password: 'Melisha@98',
-  database: 'user-auth-multi-tenant',
+  database: 'multi_tenant',
   namingStrategy: new SnakeNamingStrategy(),
   logging: true,
   entities: [User, Tenant],
-  migrations: [__dirname + '../migrations/public/*{.ts,.js}'],
+  migrations: [join(__dirname, '../migrations/public/*{.ts,.js}')],
 };
