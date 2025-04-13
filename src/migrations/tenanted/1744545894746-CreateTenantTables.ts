@@ -2,11 +2,11 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateTenantTables1744545894746 implements MigrationInterface {
   name = 'CreateTenantTables1744545894746';
-
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const schema = queryRunner.connection.driver.schema
     // Create role table
     await queryRunner.query(
-      `CREATE TABLE "role" (
+      `CREATE TABLE "${schema}"."role" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "created_at" TIMESTAMP NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
@@ -18,7 +18,7 @@ export class CreateTenantTables1744545894746 implements MigrationInterface {
 
     // Create user_privilege_matrix table
     await queryRunner.query(
-      `CREATE TABLE "user_privilege_matrix" (
+      `CREATE TABLE "${schema}"."user_privilege_matrix" (
                 "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
                 "created_at" TIMESTAMP NOT NULL DEFAULT now(),
                 "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
