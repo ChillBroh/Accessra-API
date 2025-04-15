@@ -35,24 +35,13 @@ export class AuthService {
       hashedPassword,
       firstName,
       lastName,
+      roleId: parseInt(roleId),
     });
 
-    await this.userRepository.save(user);
-
-    // Generate token
-    const token = this.jwtService.sign({
-      sub: user.id,
-      email: user.email,
-      roleId: user.roleId,
-    });
-
-    // Update user with generated token
-    user.generatedToken = token;
     await this.userRepository.save(user);
 
     return {
       message: 'User registered successfully',
-      token,
       user: {
         id: user.id,
         email: user.email,
@@ -78,16 +67,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Generate new token
+    // Generate token
     const token = this.jwtService.sign({
       sub: user.id,
       email: user.email,
       roleId: user.roleId,
     });
-
-    // Update user with new token
-    user.generatedToken = token;
-    await this.userRepository.save(user);
 
     return {
       message: 'Login successful',
