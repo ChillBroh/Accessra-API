@@ -4,9 +4,11 @@ import { publicOrmConfig } from './public-orm.config';
 import { join } from 'path';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 import { Resource } from '../modules/public/entities/resource.entity';
+import { UserRole } from '../modules/tenanted/entities/user-role.entity';
+import { User } from '../modules/public/entities/user.entity';
 
 export const tenantOrmConfig: PostgresConnectionOptions = {
   ...(publicOrmConfig as PostgresConnectionOptions),
-  entities: [Role, UserPrivilegeMatrix, Resource],
+  entities: [Role, UserPrivilegeMatrix, Resource, UserRole, User],
   migrations: [join(__dirname, '../migrations/tenanted/*{.ts,.js}')],
 };

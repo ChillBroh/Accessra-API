@@ -8,10 +8,11 @@ import { User } from '../entities/user.entity';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { TenantService } from '../tenant/tenant.service';
 import { Tenant } from '../entities/tenant.entity';
+import { UserRole } from '../../tenanted/entities/user-role.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Tenant]),
+    TypeOrmModule.forFeature([User, Tenant, UserRole]),
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your-secret-key',

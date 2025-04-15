@@ -8,6 +8,10 @@ import { Tenant } from '../entities/tenant.entity';
 import { SignInDto } from './dto/signin.dto';
 import { RegisterDto } from './dto/register.dto';
 import { TenantService } from '../tenant/tenant.service';
+import { AppDataSource } from '../../../config/data-source';
+import { getTenantDataSource } from '../../utils/tenant-datasource.util';
+import { Role } from '../../tenanted/entities/role.entity';
+import { UserRole } from '../../tenanted/entities/user-role.entity';
 
 @Injectable()
 export class AuthService {
@@ -57,7 +61,7 @@ export class AuthService {
     };
 
     const savedUser = await this.userRepository.save(user);
-
+    await this.addRoleToAdminUser(tenant.schemaName, savedUser.id);
     return {
       message: 'User and tenant registered successfully',
       user: {
@@ -67,6 +71,24 @@ export class AuthService {
     };
   }
 
+  async addRoleToAdminUser(schema: string, userId: string) {
+    const dataSource = await getTenantDataSource(schema);
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    const adminRole = await dataSource.getRepository(Role).findOne({
+      where: {
+        name: 'Administrator',
+      },
+    });
+    const userRole = {
+      user: user,
+      role: adminRole,
+    };
+    await dataSource.getRepository(UserRole).save(userRole);
+  }
   async signIn(signInDto: SignInDto) {
     const { email, password } = signInDto;
 
