@@ -1,9 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ResourceService } from './resource.service';
 import { CreateResourceDto } from './dto/create-resource.dto';
 import { UpdateResourceDto } from './dto/update-resource.dto';
 
-@Controller('resource')
+@Controller('resources')
 export class ResourceController {
   constructor(private readonly resourceService: ResourceService) {}
 
@@ -19,16 +27,19 @@ export class ResourceController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.resourceService.findOne(+id);
+    return this.resourceService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateResourceDto: UpdateResourceDto) {
-    return this.resourceService.update(+id, updateResourceDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateResourceDto: UpdateResourceDto,
+  ) {
+    return this.resourceService.update(id, updateResourceDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.resourceService.remove(+id);
+    return this.resourceService.remove(id);
   }
 }

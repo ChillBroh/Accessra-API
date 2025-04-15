@@ -1,26 +1,69 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateResourceDto } from './dto/create-resource.dto';
 import { UpdateResourceDto } from './dto/update-resource.dto';
+import { Resource } from '../entities/resource.entity';
 
 @Injectable()
 export class ResourceService {
-  create(createResourceDto: CreateResourceDto) {
-    return 'This action adds a new resource';
+  constructor(
+    @InjectRepository(Resource)
+    private readonly resourceRepository: Repository<Resource>,
+  ) {}
+
+  async create(createResourceDto: CreateResourceDto) {
+    const resource = this.resourceRepository.create(createResourceDto);
+    await this.resourceRepository.save(resource);
+    return {
+      message: 'Resource created successfully',
+      resource,
+    };
   }
 
-  findAll() {
-    return `This action returns all resource`;
+  async findAll() {
+    const resources = await this.resourceRepository.find();
+    return {
+      message: 'Resources retrieved successfully',
+      resources,
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} resource`;
+  async findOne(id: string) {
+    const resource = await this.resourceRepository.findOne({ where: { id } });
+    if (!resource) {
+      throw new NotFoundException(`Resource with ID ${id} not found`);
+    }
+    return {
+      message: 'Resource retrieved successfully',
+      resource,
+    };
   }
 
-  update(id: number, updateResourceDto: UpdateResourceDto) {
-    return `This action updates a #${id} resource`;
+  async update(id: string, updateResourceDto: UpdateResourceDto) {
+    const resource = await this.resourceRepository.findOne({ where: { id } });
+    if (!resource) {
+      throw new NotFoundException(`Resource with ID ${id} not found`);
+    }
+
+    await this.resourceRepository.update(id, updateResourceDto);
+    const updatedResource = await this.resourceRepository.findOne({ where: { id } });
+
+    return {
+      message: 'Resource updated successfully',
+      resource: updatedResource,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} resource`;
+  async remove(id: string) {
+    const resource = await this.resourceRepository.findOne({ where: { id } });
+    if (!resource) {
+      throw new NotFoundException(`Resource with ID ${id} not found`);
+    }
+
+    await this.resourceRepository.remove(resource);
+    return {
+      message: 'Resource deleted successfully',
+    };
   }
 }
