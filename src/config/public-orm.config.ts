@@ -1,7 +1,7 @@
 import { SnakeNamingStrategy } from '../SnakeNamingStrategy';
 import { Tenant } from '../modules/public/entities/tenant.entity';
 import { User } from '../modules/public/entities/user.entity';
-import {Resource} from '../modules/public/entities/resource.entity';
+import { Resource } from '../modules/public/entities/resource.entity';
 import { DataSourceOptions } from 'typeorm';
 import { join } from 'path';
 

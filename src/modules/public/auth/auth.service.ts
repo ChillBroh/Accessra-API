@@ -4,19 +4,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../entities/user.entity';
+import { Tenant } from '../entities/tenant.entity';
 import { SignInDto } from './dto/signin.dto';
 import { RegisterDto } from './dto/register.dto';
+import { TenantService } from '../tenant/tenant.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Tenant)
+    private readonly tenantRepository: Repository<Tenant>,
+    private readonly tenantService: TenantService,
     private readonly jwtService: JwtService,
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, firstName, lastName, roleId } = registerDto;
+    const { email, password, firstName, lastName, roleId, tenantName } =
+      registerDto;
 
     // Check if user already exists
     const existingUser = await this.userRepository.findOne({
@@ -26,28 +32,37 @@ export class AuthService {
       throw new UnauthorizedException('User already exists');
     }
 
+    // Check if tenant name is already taken
+    const existingTenant = await this.tenantRepository.findOne({
+      where: { name: tenantName },
+    });
+    if (existingTenant) {
+      throw new UnauthorizedException('Tenant name already exists');
+    }
+
+    // Create new tenant
+    const tenant = await this.tenantService.create({
+      name: tenantName,
+    });
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create new user
-    const user = this.userRepository.create({
+    const user = {
       email,
       hashedPassword,
       firstName,
       lastName,
-      roleId: parseInt(roleId),
-    });
+      tenant: tenant,
+    };
 
-    await this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
 
     return {
-      message: 'User registered successfully',
+      message: 'User and tenant registered successfully',
       user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        roleId: user.roleId,
+        savedUser,
+        tenant,
       },
     };
   }
@@ -56,7 +71,10 @@ export class AuthService {
     const { email, password } = signInDto;
 
     // Find user
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ['tenant'],
+    });
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -71,7 +89,8 @@ export class AuthService {
     const token = this.jwtService.sign({
       sub: user.id,
       email: user.email,
-      roleId: user.roleId,
+      tenantId: user.tenant.id,
+      schemaName: user.tenant.schemaName,
     });
 
     return {
@@ -82,7 +101,11 @@ export class AuthService {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        roleId: user.roleId,
+        tenant: {
+          id: user.tenant.id,
+          name: user.tenant.name,
+          schemaName: user.tenant.schemaName,
+        },
       },
     };
   }

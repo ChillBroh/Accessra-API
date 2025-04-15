@@ -16,4 +16,8 @@ export class RegisterDto {
 
   @IsString()
   roleId: string;
+
+  @IsString()
+  @MinLength(3)
+  tenantName: string;
 } 

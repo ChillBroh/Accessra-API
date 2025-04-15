@@ -1,6 +1,6 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { AbstractEntity } from '../../../abstract.entity';
-import { Role } from '../../tenanted/entities/role.entity';
+import { Tenant } from './tenant.entity';
 
 @Entity({ name: 'user', schema: 'public' })
 export class User extends AbstractEntity {
@@ -19,10 +19,11 @@ export class User extends AbstractEntity {
   @Column({ name: 'generated_token', nullable: true })
   generatedToken: string;
 
-  // @ManyToOne(() => Role)
-  // @JoinColumn({ name: 'role_id' })
-  // role: Role;
+  @ManyToOne(() => Tenant)
+  @JoinColumn({ name: 'tenant_id' })
+  tenant: Tenant;
 
-  @Column({ name: 'role_id', nullable: true })
-  roleId: number;
+  @Column({ name: 'tenant_id' })
+  tenantId: string;
+
 }
