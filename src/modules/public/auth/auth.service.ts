@@ -8,7 +8,6 @@ import { Tenant } from '../entities/tenant.entity';
 import { SignInDto } from './dto/signin.dto';
 import { RegisterDto } from './dto/register.dto';
 import { TenantService } from '../tenant/tenant.service';
-import { AppDataSource } from '../../../config/data-source';
 import { getTenantDataSource } from '../../utils/tenant-datasource.util';
 import { Role } from '../../tenanted/entities/role.entity';
 import { UserRole } from '../../tenanted/entities/user-role.entity';
@@ -48,6 +47,11 @@ export class AuthService {
     const tenant = await this.tenantService.create({
       name: tenantName,
     });
+    const getSavedTenant = await this.tenantRepository.findOne({
+      where: {
+        name: tenantName,
+      },
+    });
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -57,9 +61,8 @@ export class AuthService {
       hashedPassword,
       firstName,
       lastName,
-      tenant: tenant,
+      tenant: getSavedTenant,
     };
-
     const savedUser = await this.userRepository.save(user);
     await this.addRoleToAdminUser(tenant.schemaName, savedUser.id);
     return {
@@ -84,8 +87,8 @@ export class AuthService {
       },
     });
     const userRole = {
-      user: user,
-      role: adminRole,
+      userId: user.id,
+      roleId: adminRole.id,
     };
     await dataSource.getRepository(UserRole).save(userRole);
   }

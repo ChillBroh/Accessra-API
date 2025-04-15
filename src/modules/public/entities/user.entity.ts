@@ -25,5 +25,4 @@ export class User extends AbstractEntity {
 
   @Column({ name: 'tenant_id' })
   tenantId: string;
-
 }
