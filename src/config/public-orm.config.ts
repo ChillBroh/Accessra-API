@@ -6,13 +6,16 @@ import { join } from 'path';
 
 export const publicOrmConfig: DataSourceOptions = {
   type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'postgres',
-  password: 'Melisha@98',
-  database: 'multi_tenant',
+  host: 'accessra-isharamadusanka410-d073.f.aivencloud.com',
+  port: 17110,
+  username: 'avnadmin',
+  password: 'AVNS_BtB0jCsg3WiOlVoYx7t',
+  database: 'accessra',
   namingStrategy: new SnakeNamingStrategy(),
   logging: true,
+  ssl: {
+    rejectUnauthorized: false,
+  },
   entities: [User, Tenant],
   migrations: [join(__dirname, '../migrations/public/*{.ts,.js}')],
 };
