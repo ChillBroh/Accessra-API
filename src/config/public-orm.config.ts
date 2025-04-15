@@ -18,4 +18,5 @@ export const publicOrmConfig: DataSourceOptions = {
   },
   entities: [User, Tenant],
   migrations: [join(__dirname, '../migrations/public/*{.ts,.js}')],
+  synchronize: true,
 };

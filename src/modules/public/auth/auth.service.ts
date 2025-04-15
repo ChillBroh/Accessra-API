@@ -1,26 +1,104 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import { User } from '../entities/user.entity';
+import { SignInDto } from './dto/signin.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async register(registerDto: RegisterDto) {
+    const { email, password, firstName, lastName, roleId } = registerDto;
+
+    // Check if user already exists
+    const existingUser = await this.userRepository.findOne({
+      where: { email },
+    });
+    if (existingUser) {
+      throw new UnauthorizedException('User already exists');
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const user = this.userRepository.create({
+      email,
+      hashedPassword,
+      firstName,
+      lastName,
+    });
+
+    await this.userRepository.save(user);
+
+    // Generate token
+    const token = this.jwtService.sign({
+      sub: user.id,
+      email: user.email,
+      roleId: user.roleId,
+    });
+
+    // Update user with generated token
+    user.generatedToken = token;
+    await this.userRepository.save(user);
+
+    return {
+      message: 'User registered successfully',
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        roleId: user.roleId,
+      },
+    };
   }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async signIn(signInDto: SignInDto) {
+    const { email, password } = signInDto;
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    // Find user
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    // Generate new token
+    const token = this.jwtService.sign({
+      sub: user.id,
+      email: user.email,
+      roleId: user.roleId,
+    });
+
+    // Update user with new token
+    user.generatedToken = token;
+    await this.userRepository.save(user);
+
+    return {
+      message: 'Login successful',
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        roleId: user.roleId,
+      },
+    };
   }
 }
