@@ -7,6 +7,7 @@ import { RoleModule } from './modules/tenanted/role/role.module';
 import { UserPrivilegeMatrixModule } from './modules/tenanted/user-privilege-matrix/user-privilege-matrix.module';
 import { DataSource } from 'typeorm';
 import { AuthModule } from './modules/public/auth/auth.module';
+import { ResourceModule } from './modules/public/resource/resource.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from './modules/public/auth/auth.module';
     RoleModule,
     UserPrivilegeMatrixModule,
     AuthModule,
+    ResourceModule,
   ],
   providers: [
     {

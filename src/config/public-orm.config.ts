@@ -1,6 +1,7 @@
 import { SnakeNamingStrategy } from '../SnakeNamingStrategy';
 import { Tenant } from '../modules/public/entities/tenant.entity';
 import { User } from '../modules/public/entities/user.entity';
+import {Resource} from '../modules/public/entities/resource.entity';
 import { DataSourceOptions } from 'typeorm';
 import { join } from 'path';
 
@@ -16,7 +17,7 @@ export const publicOrmConfig: DataSourceOptions = {
   ssl: {
     rejectUnauthorized: false,
   },
-  entities: [User, Tenant],
+  entities: [User, Tenant, Resource],
   migrations: [join(__dirname, '../migrations/public/*{.ts,.js}')],
   synchronize: true,
 };
