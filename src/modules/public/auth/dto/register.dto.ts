@@ -20,4 +20,4 @@ export class RegisterDto {
   @IsString()
   @MinLength(3)
   tenantName: string;
-} 
+}
