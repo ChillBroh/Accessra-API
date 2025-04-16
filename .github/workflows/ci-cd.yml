@@ -1,42 +1,56 @@
-#name: CI/CD Pipeline
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 #
-#on:
-#  push:
-#    branches:
-#      - main
-#  pull_request:
-#    branches:
-#      - main
-#
-#jobs:
-#  test:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      - name: Setup Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: '20.x'
-#          cache: 'npm'
-#
-#      - name: Install dependencies
-#        run: npm ci
-#
-#      - name: Run linting
-#        run: npm run lint
-#
-##      - name: Run tests
-##        run: npm run test
-##        env:
-##          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-##
-##      - name: Run e2e tests
-##        run: npm run test:e2e
-##        env:
-##          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create .env file
+        run: |
+          echo "PROD_DB_HOST=${{ secrets.PROD_DB_HOST }}" >> .env
+          echo "PROD_DB_PORT=${{ secrets.PROD_DB_PORT }}" >> .env
+          echo "PROD_DB_USERNAME=${{ secrets.PROD_DB_USERNAME }}" >> .env
+          echo "PROD_DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}" >> .env
+          echo "PROD_DB_NAME=${{ secrets.PROD_DB_NAME }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+
+      - name: Build Docker Image
+        run: docker build -t chillbroh98/accessra .
+
+      - name: Login to docker hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Publish image to docker hub
+        run: docker push chillbroh98/accessra:latest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - name: pull image from docker hub
+        run: docker pull chillbroh98/accessra:latest
+
+      - name: Delete old container
+        run: docker rm -f accessra-app-containe
+      - name: run docker container
+        run: docker run -d -p 4000:4000 --name accessra-app-container chillbroh98/accessra
+
+
+
+
+
 #
 #  build:
 #    needs: test

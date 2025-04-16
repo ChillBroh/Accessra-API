@@ -29,13 +29,6 @@ RUN npm ci --production
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
 
-# Copy environment files
-COPY .env* ./
-
-# Create a non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
-
 # Expose the port the app runs on
 EXPOSE 4000
 
