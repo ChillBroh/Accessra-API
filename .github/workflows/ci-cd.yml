@@ -63,7 +63,16 @@ jobs:
         run: docker rm -f accessra-app-container || true
 
       - name: Run docker container
-        run: docker run -d -p 4000:4000 --name accessra-app-container chillbroh98/accessra
+        run: docker run -d \
+          -e PROD_DB_HOST=${{ secrets.PROD_DB_HOST }} \
+          -e PROD_DB_PORT=${{ secrets.PROD_DB_PORT }} \
+          -e PROD_DB_USERNAME=${{ secrets.PROD_DB_USERNAME }} \
+          -e PROD_DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }} \
+          -e PROD_DB_NAME=${{ secrets.PROD_DB_NAME }} \
+          -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+          -p 4000:4000 \
+          --name accessra-app-container \
+          chillbroh98/accessra
 
 
 #
