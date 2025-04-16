@@ -39,7 +39,7 @@ jobs:
           projectBaseDir: .
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_CLOUD_TOKEN }}
-          SONAR_PROJECT_KEY: ChillBroh_Accessra_API
+          SONAR_PROJECT_KEY: ChillBroh_Accessra-API
           SONAR_ORGANIZATION: chillbroh
 
       - name: Build Docker Image
