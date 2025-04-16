@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - main
-#
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,6 +25,26 @@ jobs:
           echo "PROD_DB_NAME=${{ secrets.PROD_DB_NAME }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test -- --coverage
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: .
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_CLOUD_TOKEN }}
+          SONAR_PROJECT_KEY: ChillBroh_Accessra_API
+          SONAR_ORGANIZATION: chillbroh
+
       - name: Build Docker Image
         run: docker build -t chillbroh98/accessra .
 
@@ -39,17 +59,14 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: pull image from docker hub
+      - name: Pull image from docker hub
         run: docker pull chillbroh98/accessra:latest
 
       - name: Delete old container
-        run: docker rm -f accessra-app-container
+        run: docker rm -f accessra-app-container || true
 
-      - name: run docker container
+      - name: Run docker container
         run: docker run -d -p 4000:4000 --name accessra-app-container chillbroh98/accessra
-
-
-
 
 
 #
