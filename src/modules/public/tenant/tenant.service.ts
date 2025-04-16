@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tenant } from '../entities/tenant.entity';
@@ -49,5 +49,13 @@ export class TenantService {
 
   findAll(): Promise<Tenant[]> {
     return this.tenantRepository.find();
+  }
+
+  async findOne(id: string): Promise<Tenant> {
+    const tenant = await this.tenantRepository.findOne({ where: { id } });
+    if (!tenant) {
+      throw new NotFoundException(`Tenant with ID ${id} not found`);
+    }
+    return tenant;
   }
 }
