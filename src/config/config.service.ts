@@ -30,7 +30,8 @@ export class ConfigService {
       port: parseInt(this.get('PROD_DB_PORT') || '5432', 10),
       username: this.get('PROD_DB_USERNAME') || 'postgres',
       password: this.get('PROD_DB_PASSWORD') || 'postgres',
-      database: this.get('PROD_DB_NAME') || 'multi_tenant_app',
+      database: this.get('PROD_DB_NAME') || 'multi_tenant',
+      jwt_secret: this.get('JWT_SECRET') || 'secret'
     };
   }
 } 
