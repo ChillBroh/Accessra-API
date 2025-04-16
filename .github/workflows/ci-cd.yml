@@ -43,7 +43,8 @@ jobs:
         run: docker pull chillbroh98/accessra:latest
 
       - name: Delete old container
-        run: docker rm -f accessra-app-containe
+        run: docker rm -f accessra-app-container
+
       - name: run docker container
         run: docker run -d -p 4000:4000 --name accessra-app-container chillbroh98/accessra
 
