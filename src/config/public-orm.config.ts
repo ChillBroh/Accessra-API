@@ -4,14 +4,19 @@ import { User } from '../modules/public/entities/user.entity';
 import { Resource } from '../modules/public/entities/resource.entity';
 import { DataSourceOptions } from 'typeorm';
 import { join } from 'path';
+import { ConfigService } from './config.service';
+
+// Create a ConfigService instance
+const configService = new ConfigService();
+const dbConfig = configService.databaseConfig;
 
 export const publicOrmConfig: DataSourceOptions = {
   type: 'postgres',
-  host: 'accessra-isharamadusanka410-d073.f.aivencloud.com',
-  port: 17110,
-  username: 'avnadmin',
-  password: 'AVNS_BtB0jCsg3WiOlVoYx7t',
-  database: 'accessra',
+  host: dbConfig.host,
+  port: dbConfig.port,
+  username: dbConfig.username,
+  password: dbConfig.password,
+  database: dbConfig.database,
   namingStrategy: new SnakeNamingStrategy(),
   logging: true,
   ssl: {

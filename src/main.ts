@@ -6,6 +6,18 @@ import { publicOrmConfig } from './config/public-orm.config';
 import { getTenantConnection } from './modules/tenancy/tenancy.utils';
 import { Logger } from '@nestjs/common';
 import { Tenant } from './modules/public/entities/tenant.entity';
+import * as dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
+
+// Log environment variables to verify they're loaded
+console.log('Environment Variables:');
+console.log('PROD_DB_HOST:', process.env.PROD_DB_HOST);
+console.log('PROD_DB_PORT:', process.env.PROD_DB_PORT);
+console.log('PROD_DB_USERNAME:', process.env.PROD_DB_USERNAME);
+console.log('PROD_DB_NAME:', process.env.PROD_DB_NAME);
+console.log('NODE_ENV:', process.env.NODE_ENV);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
