@@ -13,9 +13,9 @@ build
 .gitignore
 
 # Environment variables
-.env
-.env.*
-!.env.example
+#.env
+#.env.*
+#!.env.example
 
 # IDE and editor files
 .idea
