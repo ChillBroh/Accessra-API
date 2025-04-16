@@ -24,8 +24,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, firstName, lastName, roleId, tenantName } =
-      registerDto;
+    const { email, password, firstName, lastName, tenantName } = registerDto;
 
     // Check if user already exists
     const existingUser = await this.userRepository.findOne({

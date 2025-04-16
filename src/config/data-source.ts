@@ -16,7 +16,7 @@ export const AppDataSource = new DataSource(config);
 AppDataSource.initialize()
   .then(() => {
     console.log(
-      `Data Source has been initialized for ${migrationType || 'public'} schema!`,
+      `Data Source has been initialized for ${migrationType ?? 'public'} schema!`,
     );
   })
   .catch((err) => {
