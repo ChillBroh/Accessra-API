@@ -74,16 +74,15 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: aceessra-app
-          image: chillbroh98/accessra
+          container-name: aceessra-app  # Corrected spelling
+          image: chillbroh98/accessra:latest  # Added tag
 
       - name: Deploy ECS Service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        continue-on-error: false
         with:
           service: accessra_app
           cluster: accessra
-          task-definition: ${{ steps.task-def.outputs.task-definition-arn }}
+          task-definition: ${{ steps.task-def.outputs.task-definition }}  # Corrected output variable
           wait-for-service-stability: true
 
 
