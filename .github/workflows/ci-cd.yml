@@ -71,12 +71,13 @@ jobs:
 
       - name: Register new task definition
         id: task-def
-        uses: aws-actions/amazon-ecs-register-task-definition@v1
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
 
       - name: Deploy ECS Service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        continue-on-error: false
         with:
           service: accessra_app
           cluster: accessra
