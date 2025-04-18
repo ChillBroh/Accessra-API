@@ -56,12 +56,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Update ECS Service to use latest image
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Download task definition
+        run: aws ecs describe-task-definition --task-definition accessra_app > task-definition.json
+
+      - name: Replace image URI in task definition
+        run: sed -i "s|chillbroh98/accessra:[^\"']*|chillbroh98/accessra:latest|g" task-definition.json
+
+      - name: Register new task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-register-task-definition@v1
         with:
           task-definition: task-definition.json
+
+      - name: Deploy ECS Service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
           service: accessra_app
           cluster: accessra
+          task-definition: ${{ steps.task-def.outputs.task-definition-arn }}
           wait-for-service-stability: true
 
 
