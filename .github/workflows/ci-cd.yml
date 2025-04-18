@@ -70,7 +70,7 @@ jobs:
         run: |
           # Remove enableFaultInjection and other unsupported parameters
           jq 'del(.enableFaultInjection) | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)' task-definition.json > cleaned-task-definition.json
-          
+
       - name: Replace image URI in task definition
         run: sed -i "s|chillbroh98/accessra:[^\"']*|chillbroh98/accessra:latest|g" task-definition.json
 
