@@ -21,8 +21,13 @@ console.log('NODE_ENV:', process.env.NODE_ENV);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: ['http://localhost:5173'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-tenant-id'],
+    credentials: true,
+  });
   app.use(tenancyMiddleware);
-
   // ✅ Create a DataSource for the public schema
   const publicDataSource = new DataSource(publicOrmConfig);
   await publicDataSource.initialize();
