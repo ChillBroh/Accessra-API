@@ -53,17 +53,16 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Pull image from docker hub
-        run: docker pull chillbroh98/accessra:latest
-
-      - name: Delete old container
-        run: docker rm -f accessra-app-container || true
-
-      - name: Run docker container
-        run: docker run -d -p 4000:4000 --name accessra-app-container chillbroh98/accessra
+      - name: Update ECS Service to use latest image
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          service: accessra_app
+          cluster: accessra
+          wait-for-service-stability: true
 
 
 #
