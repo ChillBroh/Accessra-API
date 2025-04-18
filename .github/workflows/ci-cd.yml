@@ -75,6 +75,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: aceessra-app
+          image: chillbroh98/accessra
 
       - name: Deploy ECS Service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
