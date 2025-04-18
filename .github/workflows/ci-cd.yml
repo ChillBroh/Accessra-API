@@ -77,9 +77,9 @@ jobs:
       - name: Register new task definition
         id: register-task-def
         run: |
-          echo "${{ steps.render-task-def.outputs.task-definition }}" > new-task-def.json
-          aws ecs register-task-definition --cli-input-json file://new-task-def.json > registered-task-def.json
-          echo "task_definition_arn=$(cat registered-task-def.json | jq -r '.taskDefinition.taskDefinitionArn')" >> $GITHUB_ENV
+          aws ecs register-task-definition --cli-input-json file://${{ steps.render-task-def.outputs.task-definition }}
+          echo "task_definition_arn=$(aws ecs describe-task-definition --task-definition accessra_app --query 'taskDefinition.taskDefinitionArn' --output text)" >> $GITHUB_ENV
+      
 
       - name: Deploy ECS Service
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
