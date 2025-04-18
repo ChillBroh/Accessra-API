@@ -69,6 +69,14 @@ jobs:
       - name: Replace image URI in task definition
         run: sed -i "s|chillbroh98/accessra:[^\"']*|chillbroh98/accessra:latest|g" task-definition.json
 
+      - name: Validate task definition format
+        run: |
+          cat task-definition.json | jq '.containerDefinitions'
+          if [ $(cat task-definition.json | jq '.containerDefinitions' | wc -l) -eq 0 ]; then
+            echo "Error: containerDefinitions section is missing or empty."
+            exit 1
+          fi
+
       - name: Register new task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
