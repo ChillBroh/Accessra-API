@@ -63,35 +63,36 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
       - name: Download task definition
         run: aws ecs describe-task-definition --task-definition accessra_app --query taskDefinition --output json > task-definition.json
 
-      - name: Remove unsupported parameters
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Prepare clean task definition and update image
         run: |
-          # Remove enableFaultInjection and other unsupported parameters
-          jq 'del(.enableFaultInjection) | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)' task-definition.json > cleaned-task-definition.json
+          # Create a clean task definition by removing fields AWS doesn't allow on re-registration
+          jq 'del(.taskDefinitionArn, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy, .revision, .enableFaultInjection)' task-definition.json > clean-task-def.json
 
-      - name: Replace image URI in task definition
-        run: sed -i "s|chillbroh98/accessra:[^\"']*|chillbroh98/accessra:latest|g" task-definition.json
+          # Update the image URI in the container definition
+          CONTAINER_NAME="accessra-app"
+          jq --arg IMAGE "chillbroh98/accessra:latest" --arg NAME "$CONTAINER_NAME" '.containerDefinitions |= map(if .name == $NAME then .image = $IMAGE else . end)' clean-task-def.json > updated-task-def.json
 
-      - name: Register new task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: aceessra-app  # Corrected spelling
-          image: chillbroh98/accessra:latest  # Added tag
+      - name: Register new task definition with AWS CLI
+        id: register-task-def
+        run: |
+          NEW_TASK_DEFINITION=$(aws ecs register-task-definition --cli-input-json file://updated-task-def.json --query 'taskDefinition.taskDefinitionArn' --output text)
+          echo "task_definition_arn=$NEW_TASK_DEFINITION" >> $GITHUB_OUTPUT
 
-      - name: Deploy ECS Service
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          service: accessra_app
-          cluster: accessra
-          task-definition: ${{ steps.task-def.outputs.task-definition }}  # Corrected output variable
-          wait-for-service-stability: true
+      - name: Deploy to ECS with AWS CLI
+        run: |
+          aws ecs update-service --cluster accessra \
+                                --service accessra_app \
+                                --task-definition ${{ steps.register-task-def.outputs.task_definition_arn }} \
+                                --force-new-deployment
+
+      - name: Wait for service stability
+        run: aws ecs wait services-stable --cluster accessra --services accessra_app
 
 
 #
