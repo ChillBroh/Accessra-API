@@ -94,8 +94,6 @@ jobs:
       - name: Wait for service stability
         run: aws ecs wait services-stable --cluster accessra --services accessra_app
 
-
-#
 #  build:
 #    needs: test
 #    runs-on: ubuntu-latest
