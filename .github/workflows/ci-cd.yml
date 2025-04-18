@@ -63,6 +63,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
       - name: Download task definition
         run: aws ecs describe-task-definition --task-definition accessra_app --query taskDefinition --output json > task-definition.json
 
