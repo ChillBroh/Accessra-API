@@ -64,7 +64,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Download task definition
-        run: aws ecs describe-task-definition --task-definition accessra_app > task-definition.json
+        run: aws ecs describe-task-definition --task-definition accessra_app --query taskDefinition --output json > task-definition.json
 
       - name: Replace image URI in task definition
         run: sed -i "s|chillbroh98/accessra:[^\"']*|chillbroh98/accessra:latest|g" task-definition.json
@@ -74,7 +74,7 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: accessra-app
+          container-name: aceessra-app
           image: chillbroh98/accessra
 
       - name: Deploy ECS Service
