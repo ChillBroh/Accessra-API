@@ -55,17 +55,5 @@ This approach provides:
 
 ---
 
-## 📁 Project Structur
-
-Accessra-API/
-├── .github/workflows/ # GitHub CI workflows
-├── src/ # Application source code
-├── test/ # Test files
-├── .env.example # Sample environment configuration
-├── Dockerfile # Docker image setup
-├── docker-compose.yml # Docker container orchestration
-├── package.json # NPM dependencies and scripts
-└── README.md # Project documentation
-
 ![image](https://github.com/user-attachments/assets/2cf37a28-6d16-4a19-b8aa-330cf239f99c)
 
