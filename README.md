@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/2cf37a28-6d16-4a19-b8aa-330cf239f99c)# Accessra-API
+## Accessra-API
 
 **Accessra** is a schema-based, multi-tenant authentication and authorization API built using **NestJS**, **TypeORM**, and **PostgreSQL**. Designed for SaaS platforms, it ensures strict tenant isolation and scalable user management using modern cloud-native tooling.
 
@@ -66,4 +66,6 @@ Accessra-API/
 ├── docker-compose.yml # Docker container orchestration
 ├── package.json # NPM dependencies and scripts
 └── README.md # Project documentation
+
+![image](https://github.com/user-attachments/assets/2cf37a28-6d16-4a19-b8aa-330cf239f99c)
 
