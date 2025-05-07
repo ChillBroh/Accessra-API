@@ -1,46 +1,61 @@
-# Accessra-API
+![image](https://github.com/user-attachments/assets/2cf37a28-6d16-4a19-b8aa-330cf239f99c)# Accessra-API
 
-Accessra is a schema-based, multi-tenant authentication and authorization API built using **NestJS**, **TypeORM**, and **PostgreSQL**. It is designed to power secure, scalable, and isolated multi-tenant SaaS platforms.
+**Accessra** is a schema-based, multi-tenant authentication and authorization API built using **NestJS**, **TypeORM**, and **PostgreSQL**. Designed for SaaS platforms, it ensures strict tenant isolation and scalable user management using modern cloud-native tooling.
 
 ---
 
 ## 🚀 Features
 
 - 🏢 **Schema-based Multi-Tenancy**  
-  Each tenant has its own PostgreSQL schema, ensuring complete data isolation.
+  Each tenant gets its own isolated PostgreSQL schema, enabling secure and scalable SaaS environments.
 
 - 🔐 **Authentication & Authorization**  
-  Role-based access control (RBAC) for fine-grained permission management.
+  JWT-based authentication and role-based access control (RBAC).
 
 - ⚙️ **Modular NestJS Architecture**  
-  Built with NestJS to support highly maintainable and scalable APIs.
+  Cleanly separated modules for extensibility and testability.
 
-- 🗃️ **Database ORM with TypeORM**  
-  Clean and efficient database interactions using TypeORM.
+- 🗃️ **TypeORM for ORM**  
+  Dynamic tenant-aware data source creation and schema handling.
 
 - 🐳 **Docker Support**  
-  Comes with `Dockerfile` and `docker-compose.yml` for local development and testing.
+  Dockerfile and Docker Compose provided for local development and deployment.
 
 - ☁️ **AWS ECS Deployment**  
-  Easily deployable on AWS ECS with containerized services.
+  Production-ready container deployment on AWS ECS Fargate or EC2.
 
-- ✅ **CI/CD Ready**  
-  GitHub Actions workflows available for automated testing and deployment.
+- ✅ **CI/CD via GitHub Actions**  
+  Automated testing and deployment workflows using GitHub Actions.
 
 ---
 
 ## 🧱 Tech Stack
 
 - **Framework**: [NestJS](https://nestjs.com/)
-- **Database ORM**: [TypeORM](https://typeorm.io/)
+- **ORM**: [TypeORM](https://typeorm.io/)
 - **Database**: PostgreSQL
 - **Containerization**: Docker
-- **Cloud Platform**: AWS ECS Fargate
+- **Cloud**: AWS ECS (Fargate or EC2)
 - **CI/CD**: GitHub Actions
 
 ---
 
-## 📁 Project Structure
+## 🏗️ Multi-Tenancy Architecture
+
+Accessra follows a **schema-based multi-tenant** architecture:
+
+- Each tenant's data is stored in a **separate PostgreSQL schema**, ensuring complete isolation.
+- A **central database schema** manages tenant metadata, authentication credentials, and user assignments.
+- Dynamic schema creation and connection logic are handled at runtime using custom TypeORM strategies.
+
+This approach provides:
+- ✅ Strong data isolation
+- 📈 Easy scaling with minimal changes
+- 🔄 Centralized user and tenant management
+
+---
+
+## 📁 Project Structur
 
 Accessra-API/
 ├── .github/workflows/ # GitHub CI workflows
